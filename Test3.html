@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastitis Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        .container {
+            padding: 20px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .card {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 10px;
+            padding: 20px;
+            flex: 1 1 calc(30% - 40px);
+            box-sizing: border-box;
+            min-width: 250px;
+        }
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            width:800px;
+            margin-bottom:20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        .highlight {
+            color: red;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .legend div {
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+        }
+        .legend span {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .early { background-color: #5cb85c; }
+        .conventional { background-color: #5bc0de; }
+        .late { background-color: #f0ad4e; }
+        .column {
+            flex: 1;
+            float: left;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            padding: 20px;
+        }
+        .column:nth-child(odd) {
+            background-color: #f0f0f0;
+        }
+        .column:nth-child(even) {
+            background-color: #e0e0e0;
+        }
+        
+        .row:after {
+        content: "";
+        display: table;
+        clear: both;
+        }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
+
+<body>
+<div class="header">
+    <h1>Mastitis-Bericht</h1>
+</div>
+<div class="row">
+    <div class="column">
+        <div class="container">
+            <div class="card" style="width:1000px; height: 350px;">
+                <div><p > <b>Erklärungen: </b> Die täglichen Messwerte der Eutergröße und Eutertemperatur werden unten angezeigt. 
+                    Flex-Sensoren messen die Größe jedes Teils des Euters (d.h. die Eutertiefe). Die Tabelle zeigt, ob die Eutergröße oder -temperatur über dem normalen Bereich liegt (rot hervorgehoben),
+                     was auf eine mögliche Mastitis-Infektion hinweist </p></div>
+                <div class="table-container" style="width: 950px;">
+                    <table id="dataTable" style="width: 950px;">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Index</th>
+                                <th rowspan="2">Datum</th>
+                                <th rowspan="3">Kuh-ID</th>
+                                <th rowspan="2">Monate_nach_der_Geburt</th>
+                                <th colspan="4">Eutergröße Werte</th>
+                                <th rowspan="2">Eutertemperatur</th> 
+                            </tr>
+                            <tr>
+                                <th rowspan="3">Vorne links</th>
+                                <th>Vorne rechts</th>
+                                <th>Hinten links</th>
+                                <th rowspan="3">Hinten rechts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td id="indexdate"></td>
+                                <td>Kuh_1</td>
+                                <td>3 Months</td>
+                                <td>173 mm</td>
+                                <td>335 mm</td>
+                                <td>173.5 mm</td>
+                                <td>173 mm</td>
+                                <td style="color:red">42(&deg;C)</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td id="indexdate1"></td>
+                                <td>Kuh_4</td>
+                                <td>1 Months</td>
+                                <td>342.5 mm</td>
+                                <td>173 mm</td>
+                                <td>171.5 mm</td>
+                                <td>168.5 mm</td>
+                                <td style="color:red">43(&deg;C)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card" style="width: 50%; height: 50%; width: 400px;">
+            <img src="Udder Image.png" style="width: 50%; height: 50%; width: 300px;"></img>
+            <p> Abbildung 1. Darstellung der vier Viertel des Euters</p>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card" style="width: 50%; height: 50%; width: 200px;">
+            <img src="Capture1.PNG" style=" width: 200px;height: 220px;"></img>
+            <p>Abbildung 2. Veränderung der Eutergröße aufgrund einer Mastitis-Infektion</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <label for="cow-selector">Kuh-ID auswählen:</label>
+        <select id="cow-selector" onchange="handleChange()">
+            <option>None</option>
+            <option value="cow1" >Kuh_1</option>
+            <option value="cow4">Kuh_4</option>
+        </select>
+    </div>
+</div>
+
+<div class="row">
+    <div class="column" style="width:600px; height: 400px;">
+        <div class="card" style="width:600px; height: 400px;">
+            <div id="cow1Graphs" class="chart-container" style="width:600px">
+                <h2>Temperatur-Grafik</h2>
+                <div id="graph-container" style="width:500px;height:600px;"></div>
+            </div>  
+        </div> 
+    </div>
+    <div class="column" style="width:600px; height: 400px;">
+        <div class="card" style="width:600px; height: 400px;">
+            <h2>Grafik zur Eutergrößenvariation</h2>
+            <div id="graph-container1" style="width:500px;height:300px;"></div>
+        </div>
+    </div>
+    <div class="column" style="width:600px; height: 700px;">
+        <div class="card" style="width:600px; height: 700px;">
+            <h2>Beitrag zum Feature</h2>
+            <div id="iframe-container" style="width:600px;height:700px;">
+                
+            </div>   
+              
+        </div>
+    </div>
+    <div class="column" style="width:600px; height: 700px;">
+        <div class="card" style="width:600px; height: 700px;">
+            <h2></h2>
+            <div id = "selectcow1" style="width:500px;height:600px;">
+                <iframe  src="" style="width:100%; height:600px; border:none;"></iframe>
+            </div>   
+              
+        </div>
+    </div>
+</div>
+
+<script>
+const d = new Date();
+document.getElementById("indexdate").innerHTML = d.toDateString();
+document.getElementById("indexdate1").innerHTML = d.toDateString();
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('dataTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        for (let j = 2; j < cells.length - 2; j++) {
+            if (parseInt(cells[j].textContent) > 280) {
+                cells[j].classList.add('highlight');
+            }
+        }
+    }
+});
+function handleChange() {
+    showGraph();
+    displayIframe();
+    
+}
+function displayIframe() {
+    const selector = document.getElementById('cow-selector');
+    const iframeContainer = document.getElementById('iframe-container');
+    const selectedValue = selector.value;
+
+    iframeContainer.innerHTML = ''; // Clear any previous iframe
+
+    if (selectedValue == "cow1") {
+        const iframe = document.createElement('iframe');
+        iframe.src = "PieChart1.html";
+        iframe.style.width = "80%"; // Adjust width here
+        iframe.style.height = "600px";
+        iframeContainer.appendChild(iframe);
+    }
+    if (selectedValue == "cow4") {
+        const iframe = document.createElement('iframe');
+        iframe.src = "PieChart2.html";
+        iframe.style.width = "80%"; // Adjust width here
+        iframe.style.height = "600px";
+        iframeContainer.appendChild(iframe);
+    }
+}
+
+function showGraph() {
+    const cowSelector = document.getElementById('cow-selector').value;
+    const tempThreshold = 41;
+    const tempOriginalData = cowSelector === 'cow1' ? [39,42] : [37,43];
+    const tempBelowThresholdData = tempOriginalData.map(value => value > tempThreshold ? tempThreshold : value);
+    const tempAboveThresholdData = tempOriginalData.map(value => value > tempThreshold ? value - tempThreshold : 0);
+    const graphContainer = document.getElementById('graph-container');
+    const graphContainer1 = document.getElementById('graph-container1');
+
+    const graphContainer2 = document.getElementById('graph-container2');
+
+    const tempData = {
+        labels: ["Gestern","Heute"],
+        datasets: [
+            {
+                label: 'Temperatur',
+                data: tempBelowThresholdData,
+                backgroundColor: 'rgba(255, 193, 7, 0.5)',
+                stack: 'Stack 0',
+            },
+            {
+                label: 'Temperatur über dem Schwellenwert',
+                data: tempAboveThresholdData,
+                backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                stack: 'Stack 0',
+            }
+        ]
+    };
+
+    const tempOptions = {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Temperatur über Tage (°C)'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ' + context.raw + '°C';
+                    }
+                }
+            },
+            datalabels: {
+                display: true,
+                color: 'black',
+                anchor: 'end',
+                align: 'start',
+                formatter: (value, context) => {
+                    const index = context.dataIndex;
+                    const total = tempOriginalData[index];
+                    if (context.datasetIndex === 0 ) {
+                        return total + '°C';
+                    }
+                    return null;
+                }
+            }
+        },
+        scales: {
+            x: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'Tage'
+                }
+            },
+            y: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'Temperatur (°C)'
+                },
+                beginAtZero: true
+            }
+        }
+    };
+
+    const tempCtx = document.createElement('canvas');
+    tempCtx.id = 'tempChart';
+    graphContainer.innerHTML = ''; // Clear any previous chart
+    graphContainer.appendChild(tempCtx);
+
+    new Chart(tempCtx.getContext('2d'), {
+        type: 'bar',
+        data: tempData,
+        options: tempOptions,
+        plugins: [ChartDataLabels]
+    });
+    
+    const iuflThreshold = 250;
+    const iuflOriginalData = cowSelector === 'cow1' ? [169, 173] : [242.5, 342.5];
+    const euflOriginalData = cowSelector === 'cow1' ? [250,335] : [173,173];
+
+    const iuflBelowThresholdData = iuflOriginalData.map(value => value > iuflThreshold ? iuflThreshold : value);
+    const iuflAboveThresholdData = iuflOriginalData.map(value => value > iuflThreshold ? value - iuflThreshold : 0);
+    const euflBelowThresholdData = euflOriginalData.map(value => value > iuflThreshold ? iuflThreshold : value);
+    const euflAboveThresholdData = euflOriginalData.map(value => value > iuflThreshold ? value - iuflThreshold : 0);
+
+    const udderData = {
+        labels: ["Gestern","Heute"],
+        datasets: [
+            {
+                label: 'Vorne links',
+                data: iuflBelowThresholdData,
+                backgroundColor: 'rgba(0, 128, 128, 0.5)',
+                stack: 'Stack 0',
+            },
+            {
+                label: 'Über dem Schwellenwert',
+                data: iuflAboveThresholdData,
+                backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                stack: 'Stack 0',
+            },
+            {
+                label: 'Vorne rechts',
+                data: euflBelowThresholdData,
+                backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                stack: 'Stack 1',
+            },
+            {
+                label: 'Über dem Schwellenwert',
+                data: euflAboveThresholdData,
+                backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                stack: 'Stack 1',
+            }
+        ]
+    };
+
+    const udderOptions = {
+        plugins: {
+            title: {
+                display: true,
+                text: `Kuh_ ${cowSelector === 'cow1' ? '1' : '4'} Eutergrößenwerte über Tage`
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ' + context.raw;
+                    }
+                }
+            },
+            legend: {
+                labels: {
+                    filter: function(item, chart) {
+                        // Hide 'Above Threshold' label for the first instance
+                        return item.text !== 'Über dem Schwellenwert' || item.datasetIndex === 1;
+                    }
+                }
+            },
+            datalabels: {
+                display: true,
+                color: 'black',
+                anchor: 'end',
+                align: 'start',
+                formatter: (value, context) => {
+                    const index = context.dataIndex;
+                    const stack = context.dataset.stack;
+                    if ((stack === 'Stack 0' && context.datasetIndex === 0) || (stack === 'Stack 1' && context.datasetIndex === 2) ) {
+                        const total = stack === 'Stack 0' ? iuflOriginalData[index] : euflOriginalData[index];
+                        return total;
+                    }
+                    return null;
+                }
+            }
+        },
+        scales: {
+            x: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'Tage'
+                }
+            },
+            y: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'Eutergröße (Tiefe in mm)'
+                },
+                beginAtZero: true
+            }
+        }
+    };
+
+    const udderCtx = document.createElement('canvas');
+    udderCtx.id = 'udderChart';
+    graphContainer1.innerHTML = ''; // Clear any previous chart
+    graphContainer1.appendChild(udderCtx);
+
+    new Chart(udderCtx.getContext('2d'), {
+        type: 'bar',
+        data: udderData,
+        options: udderOptions,
+        plugins: [ChartDataLabels]
+    });
+}
+document.getElementById('cow1PieChart').style.display = cowSelector === 'cow1' ? 'block' : 'none';
+document.getElementById('cow4PieChart').style.display = cowSelector === 'cow4' ? 'block' : 'none';
+
+
+document.addEventListener('DOMContentLoaded', showGraph);
+
+function highlightAboveThreshold(values, threshold) {
+    return values.map(value => value > threshold ? 'rgba(255, 102, 102, 0.8)' : 'rgba(0, 128, 128, 1)');
+}
+</script>
+</body>
+</html>

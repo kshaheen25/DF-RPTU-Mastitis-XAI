@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bar Chart with Threshold Line</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
+</head>
+<body>
+
+<canvas id="tempChart" width="400" height="200"></canvas>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const tempCtx = document.getElementById('tempChart').getContext('2d');
+
+    const tempChart = new Chart(tempCtx, {
+        type: 'bar',
+        data: {
+            labels: ['','Kuh_1','Kuh_4',''],
+            datasets: [{
+                label: 'Kuh_1',
+                data: [0,42,0,0],
+                borderColor: "blue",
+                backgroundColor: "blue",
+                fill: false
+            },{
+                label: 'Kuh_4',
+                data: [0,0,43,0],
+                borderColor: "yellow",
+                backgroundColor: "yellow",
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Heute'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 60,
+                    title: {
+                        display: true,
+                        text: 'Temperatur (°C)'
+                    },
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return value + '°C';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw + '°C';
+                        }
+                    }
+                },
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            yMin: 41,
+                            yMax: 41,
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            borderDash: [6, 6],
+                            label: {
+                                content: 'Schwellenwert = 41°C',
+                                enabled: true,
+                                position: 'center'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>

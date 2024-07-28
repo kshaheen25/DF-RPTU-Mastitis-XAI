@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Display on Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+        .iframe-container {
+            margin-top: 20px;
+            width: 100%;
+            height: 500px;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <label for="cow-selector">Kuh-ID auswählen:</label>
+            <select id="cow-selector" onchange="showGraph()">
+                <option>None</option>
+                <option value="cow1" >Kuh_1</option>
+                <option value="cow4">Kuh_4</option>
+            </select>
+        </div>
+    </div>
+<div class="container">
+    <label for="iframe-selector">Select an option to display an iframe:</label>
+    <select id="iframe-selector" onchange="displayIframe()">
+        <option value="">Select...</option>
+        <option value="PieChart1.html">Page 1</option>
+        <option value="PieChart2.html">Page 2</option>
+        
+    </select>
+    <div class="iframe-container" id="iframe-container">
+        <!-- Iframe will be displayed here -->
+    </div>
+</div>
+
+<script>
+function displayIframe() {
+    const selector = document.getElementById('iframe-selector');
+    const iframeContainer = document.getElementById('iframe-container');
+    const selectedValue = selector.value;
+
+    iframeContainer.innerHTML = ''; // Clear any previous iframe
+
+    if (selectedValue) {
+        const iframe = document.createElement('iframe');
+        iframe.src = selectedValue;
+        iframeContainer.appendChild(iframe);
+    }
+}
+</script>
+
+</body>
+</html>

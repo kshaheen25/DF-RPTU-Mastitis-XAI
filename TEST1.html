@@ -1,0 +1,50 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Sample data
+data = {
+    'Cow ID': ['Cow_1', 'Cow_4'],
+    'Date': ['Fri Jul 19, 2024', 'Fri Jul 19, 2024'],
+    'Months After Birth': [3, 1],
+    'Front Left': [173, 342.5],
+    'Front Right': [335, 173],
+    'Rear Left': [173.5, 171.5],
+    'Rear Right': [173, 168.5],
+    'Temperature': [42, 43]
+}
+
+# Convert to DataFrame
+df = pd.DataFrame(data)
+
+# Set thresholds
+udder_threshold = 250  # mm
+temperature_threshold = 39  # °C
+
+# Plotting function
+def plot_data(df):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    
+    # Temperature Graph
+    for i, row in df.iterrows():
+        color = 'red' if row['Temperature'] > temperature_threshold else 'green'
+        ax1.bar(row['Date'], row['Temperature'], color=color)
+    ax1.axhline(y=temperature_threshold, color='r', linestyle='--', label='Threshold')
+    ax1.set_title('Temperature Over Days')
+    ax1.set_ylabel('Temperature (°C)')
+    ax1.legend()
+
+    # Udder Graph
+    parts = ['Front Left', 'Front Right', 'Rear Left', 'Rear Right']
+    for i, row in df.iterrows():
+        values = [row[part] for part in parts]
+        colors = ['red' if v > udder_threshold else 'blue' for v in values]
+        ax2.bar(parts, values, color=colors)
+    ax2.axhline(y=udder_threshold, color='r', linestyle='--', label='Threshold')
+    ax2.set_title('Udder Size')
+    ax2.set_ylabel('Size (mm)')
+    ax2.legend()
+
+    plt.show()
+
+# Plot the data
+plot_data(df)
